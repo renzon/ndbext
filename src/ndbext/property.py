@@ -53,3 +53,10 @@ class SimpleDecimal(IntegerBounded):
 
     def _from_base_type(self, value):
         return Decimal(value) / self.__multipler
+
+
+class SimpleCurrency(SimpleDecimal):
+    def __init__(self, decimal_places=2, lower=0, **kwargs):
+        super(SimpleCurrency, self).__init__(decimal_places=decimal_places,
+                                             lower=lower,
+                                             **kwargs)

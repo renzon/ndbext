@@ -4,7 +4,7 @@ from decimal import Decimal, InvalidOperation
 from string import lower
 import unittest
 from google.appengine.ext import ndb
-from ndbext.property import IntegerBounded, BoundaryError, SimpleDecimal
+from ndbext.property import IntegerBounded, BoundaryError, SimpleDecimal, SimpleCurrency
 from util import GAETestCase
 
 
@@ -107,3 +107,18 @@ class SimpleDecimalTests(GAETestCase):
         self.assertListEqual([Decimal('0.00'), Decimal('0.01'), Decimal('0.02')], [m.value for m in result])
         result = ModelMock.query(ModelMock.value >= Decimal('0.07')).order(ModelMock.value).fetch()
         self.assertListEqual([Decimal('0.07'), Decimal('0.08'), Decimal('0.09')], [m.value for m in result])
+
+
+class SimpleDecimalTests(GAETestCase):
+    def test_default_lower(self):
+        '''
+        Once SimpleCurrency inherits from SimpleDecimal, it's only necessary testing
+        default lower 0 value
+        '''
+
+        class ModelMock(ndb.Model):
+            currency = SimpleCurrency()
+
+        model = ModelMock(currency='-0.01')
+        self.assertRaises(BoundaryError, model.put)
+        ModelMock(currency='0').put()
