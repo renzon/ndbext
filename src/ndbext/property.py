@@ -8,6 +8,10 @@ class BoundaryError(Exception):
 
 
 class IntegerBoundary(ndb.IntegerProperty):
+    '''
+    Property to define a bounded integer based on lower and upper values
+    default value of properties is None and in this case no validation is executed
+    '''
     def __init__(self, lower=None, upper=None, **kwargs):
         self.upper = upper
         self.lower = lower

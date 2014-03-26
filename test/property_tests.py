@@ -19,6 +19,12 @@ class IntegerBoundaryTests(GAETestCase):
         # no exceptions with bigger values
         ModelMock(lower=0)
         ModelMock(lower=99999999999999999999)
+    def test_lower_and_upper(self):
+        self.assertRaises(BoundaryError, ModelMock, lower_and_upper=-3)
+        self.assertRaises(BoundaryError, ModelMock, lower_and_upper=2)
+
+        # no exceptions with values in interval
+        ModelMock(lower=0)
 
     def test_upper(self):
         self.assertRaises(BoundaryError, ModelMock, upper=4)
