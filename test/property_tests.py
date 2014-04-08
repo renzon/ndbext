@@ -46,6 +46,10 @@ class SimpleDecimalModelMock(ndb.Model):
 
 
 class SimpleDecimalTests(GAETestCase):
+    def test_data_transformation(self):
+        model = SimpleDecimalModelMock(value='1.23')
+        self.assertEqual(Decimal('1.23'), model.value)
+
     def test_lower_and_upper(self):
         model = SimpleDecimalModelMock(value=-1.23)
         self.assertRaises(BoundaryError, model.put)
@@ -109,7 +113,7 @@ class SimpleDecimalTests(GAETestCase):
         self.assertListEqual([Decimal('0.07'), Decimal('0.08'), Decimal('0.09')], [m.value for m in result])
 
 
-class SimpleDecimalTests(GAETestCase):
+class SimpleCurrencyTests(GAETestCase):
     def test_default_lower(self):
         '''
         Once SimpleCurrency inherits from SimpleDecimal, it's only necessary testing
