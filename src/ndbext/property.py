@@ -46,7 +46,7 @@ class SimpleDecimal(IntegerBounded):
         super(SimpleDecimal, self).__init__(lower=lower, upper=upper, **kwargs)
 
     def _validate(self, value):
-        return Decimal(value)
+        return self._from_base_type(self._to_base_type(value))
 
     def _to_base_type(self, value):
         return int(round(Decimal(value) * self.__multipler))
