@@ -47,16 +47,14 @@ class SimpleDecimalModelMock(ndb.Model):
 
 class SimpleDecimalTests(GAETestCase):
     def test_data_transformation(self):
-        model = SimpleDecimalModelMock(value='1.233')
-        self.assertEqual(Decimal('1.23'), model.value)
+        model = SimpleDecimalModelMock(value='1.221')
+        self.assertEqual(Decimal('1.22'), model.value)
 
     def test_lower_and_upper(self):
-        model = SimpleDecimalModelMock(value=-1.23)
-        self.assertRaises(BoundaryError, model.put)
-        model.value = -1.22
+        self.assertRaises(BoundaryError, SimpleDecimalModelMock, value=-1.23)
+        self.assertRaises(BoundaryError, SimpleDecimalModelMock, value=1.23)
+        model = SimpleDecimalModelMock(value=-1.22)
         model.put()
-        model.value = 1.23
-        self.assertRaises(BoundaryError, model.put)
         model.value = 1.22
         model.put()
 
@@ -123,6 +121,5 @@ class SimpleCurrencyTests(GAETestCase):
         class ModelMock(ndb.Model):
             currency = SimpleCurrency()
 
-        model = ModelMock(currency='-0.01')
-        self.assertRaises(BoundaryError, model.put)
+        self.assertRaises(BoundaryError, ModelMock,currency='-0.01')
         ModelMock(currency='0').put()

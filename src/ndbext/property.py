@@ -2,6 +2,7 @@
 from __future__ import absolute_import, unicode_literals
 from decimal import Decimal
 from google.appengine.ext import ndb
+from google.appengine.ext.ndb.model import IntegerProperty
 
 
 class BoundaryError(Exception):
@@ -26,7 +27,7 @@ class IntegerBounded(ndb.IntegerProperty):
             raise BoundaryError('%s is greater then %s' % (value, self.upper))
 
 
-class SimpleDecimal(IntegerBounded):
+class SimpleDecimal(IntegerProperty):
     '''
     Class representing a Decimal. It must be use when decimal places will never change
     decimal_places controls decimal places and its default is 2.
@@ -41,12 +42,17 @@ class SimpleDecimal(IntegerBounded):
     def __init__(self, decimal_places=2, lower=None, upper=None, **kwargs):
         self.decimal_places = decimal_places
         self.__multipler = (10 ** self.decimal_places)
-        lower = lower and self._to_base_type(lower)
-        upper = upper and self._to_base_type(upper)
-        super(SimpleDecimal, self).__init__(lower=lower, upper=upper, **kwargs)
+        self.lower = lower and self._from_base_type(self._to_base_type(lower))
+        self.upper = upper and self._from_base_type(self._to_base_type(upper))
+        super(SimpleDecimal, self).__init__(**kwargs)
 
     def _validate(self, value):
-        return self._from_base_type(self._to_base_type(value))
+        value = self._from_base_type(self._to_base_type(value))
+        if self.lower is not None and value < self.lower:
+            raise BoundaryError('%s is less then %s' % (value, self.lower))
+        if self.upper is not None and value > self.upper:
+            raise BoundaryError('%s is greater then %s' % (value, self.upper))
+        return value
 
     def _to_base_type(self, value):
         return int(round(Decimal(value) * self.__multipler))
